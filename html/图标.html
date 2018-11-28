@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../v3.20.1-dist/ol.css" />
+    <script type="text/javascript" src="../v3.20.1-dist/ol-debug.js"></script>
+    <title>图标</title>
+</head>
+
+<body>
+    <div id="map" style="width:100%;"></div>
+    <script>
+        var map = new ol.Map({
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                })
+            ],
+            view: new ol.View({
+                projection: 'EPSG:4326',
+                center: [104.06, 30.67],
+                zoom: 10
+            }),
+            target: 'map'
+        });
+
+        //创建一个vector的layer来放置图标
+        var iconLayer = new ol.layer.Vector({
+            source:new ol.source.Vector()
+         })
+
+        //创建一个feature，并设置好在地图上的位置
+        var anchor = new ol.Feature({
+            geometry:new ol.geom.Point([104.36,30.57])
+        });
+
+        //设置样式，在样式中设置图标
+        anchor.setStyle(new ol.style.Style({
+            image: new ol.style.Icon({
+                src:'./img/anchor.png',
+                anchor:[0.5,2]    //设置图标的位置，
+            })
+        }))
+
+        //添加到之前创建的iconLayer中
+        iconLayer.getSource().addFeature(anchor);
+
+        //将iconLayer图层添加到地图中
+        map.addLayer(iconLayer)
+
+
+
+        /* 
+            根据层级放大缩小图标
+        */
+        //监听地图层级变化
+        map.getView().on("change:resolution",function(){
+            var style = anchor.getStyle();
+            //重新设置图标的缩放率，基于层级10来缩放
+            style.getImage().setScale(this.getZoom()/10);
+            anchor.setStyle(style);
+        })
+    </script>
+</body>
+
+</html>

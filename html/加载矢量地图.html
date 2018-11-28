@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../v3.20.1-dist/ol.css" />
+    <script type="text/javascript" src="../v3.20.1-dist/ol.js"></script>
+    <title>加载矢量地图</title>
+</head>
+
+<body>
+    <div id="map" style="width: 100%;height:700px;"></div>
+    <h3>矢量地图Feature总数：<span id="count"></span></h3>
+    <script type="text/javascript">
+        //创建地图
+        var map = new ol.Map({
+            layers: [
+                // 底图用Open Street Map 地图
+                new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                }),
+                new ol.layer.Vector({
+                    source: new ol.source.Vector({
+                        url: 'http://anzhihun.coding.me/ol3-primer/data/geojson/line-samples.geojson', // 地图来源
+                        format: new ol.format.GeoJSON() // 解析矢量地图的格式化类
+                    }),
+                    style: new ol.style.Style({
+                        stroke: new ol.style.Stroke({
+                            color: 'purple',
+                            width: 10
+                        }),
+                        //填充
+                        fill: new ol.style.Fill({
+                            color: 'rgba(245,222,179,0.35)'
+                        }),
+                    })
+                })
+            ],
+            view: new ol.View({
+                center: [-72.980624870461128, 48.161307640513321],
+                zoom: 8,
+                projection: 'EPSG:4326'
+            }),
+            target: 'map'
+        });
+
+        //获取矢量地图图层(map.getLayers()获取地图图层总数)
+        var layerArr = map.getLayers().a;
+
+        // 因为是异步加载，所以要采用事件监听的方式来判定是否加载完成
+        var listenerKey = layerArr[1].getSource().on('change', function () {
+            if (layerArr[1].getSource().getState() === 'ready') { // 判定是否加载完成
+                document.getElementById('count').innerHTML = layerArr[1].getSource().getFeatures().length;
+                layerArr[1].getSource().unByKey(listenerKey); // 注销监听器
+            }
+        });
+    </script>
+</body>
+
+</html>

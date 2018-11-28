@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <link rel="stylesheet" href="../v3.20.1-dist/ol.css" type="text/css">
+  <style>
+    #map {
+        height: 700px;
+        width: 100%;
+      }
+      .ol-attribution a {
+        color: black;
+    }
+    </style>
+  <title>OpenLayers 3 example</title>
+  <script src="../v3.20.1-dist/ol.js" type="text/javascript"></script>
+</head>
+
+<body>
+  <h1>My Map</h1>
+  <div id="map"></div>
+  <div>
+    <button onclick="moveLeft()">左移</button>
+    <button onclick="moveRight()">右移</button>
+    <button onclick="moveUp()">上移</button>
+    <button onclick="moveDown()">下移</button>
+    <button onclick="zoomIn()">放大</button>
+    <button onclick="zoomOut()">缩小</button>
+    <button onclick="fitToChengdu()">显示成都</button>
+    <button onclick="switchOSM()">OpenStreetMap地图</button>
+    <button onclick="switchStream()">Stamen地图</button>
+  </div>
+  <script>
+    // Open Street Map 地图层
+    var openStreetMapLayer = new ol.layer.Tile({
+      source: new ol.source.OSM()
+    });
+
+    // Stamen地图层
+    var stamenLayer = new ol.layer.Tile({
+      source: new ol.source.Stamen({
+        layer: 'watercolor'
+      })
+    });
+    var map = new ol.Map({
+      target: 'map',
+      layers: [
+        openStreetMapLayer
+        ],
+      view: new ol.View({
+        extent: [100, 26, 106, 32],  //设置地图中心点的范围
+        
+        projection: 'EPSG:4326',
+        center: [104.06, 30.67], //等同于下面两种center设置，但是要限制地图范围最好选中这种方法
+        // center: ol.proj.fromLonLat([104.06, 30.67]), //设置地图中心点
+        // center: ol.proj.transform([104.06, 30.67], 'EPSG:4326', 'EPSG:3857'),
+        zoom: 10,
+        // 限制地图缩放最大级别为14，最小级别为8
+        minZoom: 8,
+        maxZoom: 14
+      })
+    });
+
+    // 向左移动地图
+    function moveLeft() {
+      var view = map.getView();
+      var new_center = view.getCenter();
+      // 让地图中心的x值增加，即可使得地图向左移动，增加的值根据效果可自由设定
+      new_center[0] += 50000;
+      view.setCenter(new_center);
+      map.render();
+    }
+
+    moveRight = () => {
+      var view = map.getView();
+      var new_center = view.getCenter();
+      new_center[0] -= 50000;
+      view.setCenter(new_center);
+      map.render();
+    }
+    moveUp = () => {
+      var view = map.getView();
+      var new_center = view.getCenter();
+      new_center[1] += 20000;
+      view.setCenter(new_center);
+      map.render();
+    }
+    moveDown = () => {
+      var view = map.getView();
+      var new_center = view.getCenter();
+      new_center[1] -= 20000;
+      view.setCenter(new_center);
+      map.render();
+    }
+    //缩小地图
+    zoomOut = () => {
+      var view = map.getView();
+      var new_zoom = view.getZoom();
+      new_zoom -= 2;
+      view.setZoom(new_zoom);
+      map.render();
+    }
+    zoomIn = () => {
+      var view = map.getView();
+      var new_zoom = view.getZoom();
+      new_zoom += 2;
+      view.setZoom(new_zoom);
+      map.render();
+    }
+
+    function fitToChengdu() {
+      // 让地图最大化完全地显示区域[104, 30.6, 104.12, 30.74]
+      map.getView().fit([104, 30.6, 104.12, 30.74], map.getSize());
+    }
+
+    function switchOSM() {
+      // 先移除当前的地图，再添加Open Street Map 地图
+      map.removeLayer(map.getLayers().item(0));
+      map.addLayer(openStreetMapLayer);
+    }
+    function switchStream(){
+      map.removeLayer(map.getLayers().item[0]);
+      map.addLayer(stamenLayer);
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../v3.20.1-dist/ol.css" />
+    <script type="text/javascript" src="../v3.20.1-dist/ol-debug.js"></script>
+    <title>图标</title>
+    <style>
+        @keyframes zoom {
+            from {
+                top: 0;
+                left: 0;
+                width: 32px;
+                height: 32px;
+            }
+
+            50% {
+                top: -16px;
+                left: -16px;
+                width: 64px;
+                height: 64px;
+            }
+
+            to {
+                top: 0;
+                left: 0;
+                width: 32px;
+                height: 32px;
+            }
+        }
+
+        #anchorImg {
+            display: block;
+            position: absolute;
+            animation: zoom 5s;
+            animation-iteration-count: infinite; /* 一直重复动画 */
+        }
+    </style>
+</head>
+
+<body>
+    <div id="anchor"><img id='anchorImg' src="./img/anchor.png" /></div>
+    <div id="map" style="width:100%;height:600px;"></div>
+    <script>
+        var map = new ol.Map({
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                })
+            ],
+            view: new ol.View({
+                projection: 'EPSG:4326',
+                center: [104.06, 30.67],
+                zoom: 10
+            }),
+            target: 'map'
+        });
+
+
+        //把上面的图标附加到地图上
+        var anchor = new ol.Overlay({
+            element: document.getElementById('anchor')
+        });
+        //设置附加到地图上的位置
+        anchor.setPosition([104.16, 30.57]);
+        //把图标添加到map上
+        map.addOverlay(anchor);
+        
+    </script>
+</body>
+
+</html>
