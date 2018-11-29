@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../v3.20.1-dist/ol.css" />
+    <script type="text/javascript" src="../v3.20.1-dist/ol-debug.js"></script>
+    <title>用canvas自绘图标</title>
+</head>
+
+<body>
+    <div id="map"></div>
+</body>
+
+</html>
+<script>
+    //自绘图标层
+    var iconLayer = new ol.layer.Vector({
+        source: new ol.source.Vector()
+    })
+
+    //创建地图
+    var map = new ol.Map({
+        target: 'map',
+        view: new ol.View({
+            center: [104.06, 30.67],
+            zoom: 10,
+            projection: 'EPSG:4326',
+        }),
+        layers: [
+            new ol.layer.Tile({
+                source: new ol.source.OSM()
+            }),
+            iconLayer
+        ]
+    })
+
+
+    // 使用canvas绘制一个不规则几何图形
+    var canvas = document.createElement('canvas');
+    canvas.width = 20;
+    canvas.height = 20;
+    var context = canvas.getContext("2d");
+    context.strokeStyle = "red";
+    context.lineWidth = 2;
+    context.beginPath();
+    context.moveTo(0, 0);
+    context.lineTo(20, 10);
+    context.lineTo(0, 20);
+    context.lineTo(10, 10);
+    context.lineTo(0, 0);
+    context.stroke();
+
+    //把绘制了的canvas设置到style里面
+    var style = new ol.style.Style({
+        image: new ol.style.Icon({
+            img: canvas,
+            imgSize: [canvas.width, canvas.height],
+            rotation: 90 * Math.PI / 180,
+        })
+    });
+    
+    //创建一个feature
+    var shape = new ol.Feature({
+        geometry: new ol.geom.Point([104.06, 30.67])
+    });
+
+    //应用具有不规则几何图形的样式到featur
+    shape.setStyle(style);
+    iconLayer.getSource().addFeature(shape);
+    map.addLayer(iconLayer);
+</script>
